@@ -1,17 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include<time.h>
-#include<string.h>
+#include <time.h>
+#include <string.h>
+#include <unistd.h>
+#include <termios.h>
 
 
-# define ANSI_COLOR_RED "\xlb[31m"
-# define ANSI_COLOR_GREEN "\xlb[32m"
-# define ANSI_COLOR_YELLOW "\xlb[33m"
-# define ANSI_COLOR_BLUE "\xlb[34m"
-# define ANSI_COLOR_MAGENTA "\xlb[35m"
-# define ANSI_COLOR_CYAN "\xlb[36m"
-# define ANSI_COLOR_RESET "\xlb[0m"
+# define ANSI_COLOR_RED "\x1b[31m"
+# define ANSI_COLOR_GREEN "\x1b[32m"
+# define ANSI_COLOR_YELLOW "\x1b[33m"
+# define ANSI_COLOR_BLUE "\x1b[34m"
+# define ANSI_COLOR_MAGENTA "\x1b[35m"
+# define ANSI_COLOR_CYAN "\x1b[36m"
+# define ANSI_COLOR_RESET "\x1b[0m"
+
+
+int getch(void) {
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr(STDIN_FILENO, &oldattr);           // Get current terminal attributes
+    newattr = oldattr;
+    newattr.c_lflag &= ~(ICANON | ECHO);         // Disable canonical mode and echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);  // Apply new settings
+    ch = getchar();                              // Read a character
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);  // Restore old settings
+    return ch;
+}
 
 
 // creating matrix 4*4
@@ -29,7 +44,7 @@ void createMatrix(int arr[][4])
         {
             if (lastIndex >= 0)
             {
-                index = rend() % (lastIndex + 1); // idea: performing % operation by (lastIndex + 1)
+                index = rand() % (lastIndex + 1); // idea: performing % operation by (lastIndex + 1)
                 arr[i][j] = num[index]; // Linear Congruential Generator (LCG) while given index, so put the num[index] number in matrix.
                 num[index] = num[lastIndex--]; // and replace last number with this index positioned index
             }//finilized lastIndex
@@ -91,16 +106,16 @@ void swap(int *x, int *y) {
     *x = *x + *y;
     *y = *x - *y;
     *x = *x - *y;
-    printf("");
+    printf(" ");
 }
 
 
 // read the input value from the user and return the ascii value of that
 int ReadEnteredKey(){
     char c;
-    c = _getch();
+    c = getch();
     if (c == -32){
-        c = _getch();
+        c = getch();
     }
     return c;
 }
@@ -128,7 +143,7 @@ int shiftUp(int arr[][4])
     return 1; // success
 }
 
-swapDown(int arr[][4])
+int swapDown(int arr[][4])
 {
     int i, j;
     for (i= 0; i < 4; i++){
@@ -149,7 +164,7 @@ swapDown(int arr[][4])
     return 1; // success
 }
 
-shiftRight(int arr[][4])
+int shiftRight(int arr[][4])
 {
     int i, j;
     for (i= 0; i < 4; i++){
@@ -170,7 +185,7 @@ shiftRight(int arr[][4])
     return 1; // success
 }
 
-shiftLeft(int arr[][4])
+int shiftLeft(int arr[][4])
 {
     int i, j;
     for (i= 0; i < 4; i++){
@@ -200,10 +215,10 @@ void gameRule(int arr[][4]) {
     printf("\n");
     printf(ANSI_COLOR_RED "         Rule of The GAME            \n"ANSI_COLOR_RESET);
     printf(ANSI_COLOR_RED"\nyou can move only 1 stape at a time, by Arrow Key"ANSI_COLOR_RESET);
-    printf("\n\tMove Up    : by Up arrow Key.")
-    printf("\n\tMove Down  : by Down arrow Key.")
-    printf("\n\tMove Left  : by Left arrow Key.")
-    printf("\n\tMove Right : by Right arrow Key.")
+    printf("\n\tMove Up    : by Up arrow Key.");
+    printf("\n\tMove Down  : by Down arrow Key.");
+    printf("\n\tMove Left  : by Left arrow Key.");
+    printf("\n\tMove Right : by Right arrow Key.");
 }
 
 
