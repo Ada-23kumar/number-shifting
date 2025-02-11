@@ -233,10 +233,17 @@ int main() {
     }
     printf("Player Name: ");
     scanf("%s", name);
-
-    // while (1)
-    // {
+    system("cls");
+    while (1)
+    {
         createMatrix(arr);
         gameRule(arr);
-    // }
+
+        while(!winning(arr))
+        {
+            system("cls");
+            if(!maxTry)
+                break;
+        }
+    }
 }
